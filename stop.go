@@ -59,8 +59,8 @@ func StopServices() error {
 		return err
 	}
 	for _, s := range services {
-		if s.State == "RUNNING" {
-			updateRequest := client.UpdateServiceRequest{Powered: false}
+		if s.State == "RUNNING" && s.Type != "kafka" {
+			updateRequest := client.UpdateServiceRequest{Powered: false, ProjectVPCID: s.ProjectVPCID, TerminationProtection: s.TerminationProtection}
 			service, err := c.Services.Update(m.Project, s.Name, updateRequest)
 			if err != nil {
 				return err
@@ -88,7 +88,7 @@ func StartServices() error {
 			log.Printf("%s is already running\n", s.Name)
 
 		} else {
-			updateRequest := client.UpdateServiceRequest{Powered: true}
+			updateRequest := client.UpdateServiceRequest{Powered: true, ProjectVPCID: s.ProjectVPCID, TerminationProtection: s.TerminationProtection}
 			_, err := c.Services.Update(m.Project, s.Name, updateRequest)
 			if err != nil {
 				return err
